@@ -1,4 +1,7 @@
-# Salt Development Environment
+# Vagrant Salt
+
+Bridge between Vagrant and Salt for easier creation and handling of Salt minions using Vagrant.
+
 
 ## Usage
 
