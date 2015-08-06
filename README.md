@@ -86,10 +86,12 @@ Clone the `vagrant-salt` repository.
 git clone https://github.com/FunTimeCoding/vagrant-salt
 ```
 
-Add a Vagrant base box.
+Add Vagrant base boxes.
 
 ```sh
-vagrant box add squeeze http://funtimecoding.org/wheezy.box
+vagrant box add squeeze http://funtimecoding.org/squeeze.box
+vagrant box add wheezy http://funtimecoding.org/wheezy.box
+vagrant box add jessie http://funtimecoding.org/jessie.box
 ```
 
 
@@ -100,8 +102,7 @@ This section explains how to configure a development clone of Salt ([Source](htt
 OS X specific prerequisites.
 
 ```sh
-brew install python
-brew install swig
+brew install python swig
 pip2 install virtualenv
 ```
 
@@ -114,6 +115,7 @@ git clone https://github.com/saltstack/salt
 Common OS X and Debian configuration.
 
 ```sh
+cd salt
 virtualenv .venv
 source .venv/bin/activate
 pip install -U pyzmq PyYAML pycrypto msgpack-python jinja2 psutil
@@ -131,7 +133,7 @@ Install M2Crypto on Debian.
 apt-get install python-m2crypto
 ```
 
-Install the salt clone in development mode into the current virtual environment.
+Install the salt clone in edit mode into the current virtual environment.
 
 ```sh
 pip install -e .
@@ -161,10 +163,37 @@ You can use Veewee to generate Vagrant base boxes. Base boxes are clean slate im
 git clone https://github.com/jedi4ever/veewee
 ```
 
+Install dependencies.
+
+```sh
+gem install bundler
+cd veewee
+bundle install
+```
+
 Create a Squeeze base box.
 
 ```sh
+cd veewee
 bundle exec veewee vbox define squeeze Debian-6.0.10-amd64-netboot
 bundle exec veewee vbox build squeeze
 bundle exec veewee vbox export squeeze
+```
+
+Create a Wheezy base box.
+
+```sh
+cd veewee
+bundle exec veewee vbox define wheezy Debian-7.7.0-amd64-netboot
+bundle exec veewee vbox build wheezy
+bundle exec veewee vbox export wheezy
+```
+
+Create a Jessie base box.
+
+```sh
+cd veewee
+bundle exec veewee vbox define jessie Debian-8.1.0-amd64-netboot
+bundle exec veewee vbox build jessie
+bundle exec veewee vbox export jessie
 ```
