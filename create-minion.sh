@@ -2,12 +2,12 @@
 
 DEFAULT_TEMPLATE="wheezy"
 
-BASE=$(dirname ${0})
+BASE=$(dirname "${0}")
 MINION_ID=""
 TEMPLATE="${DEFAULT_TEMPLATE}"
 DO_NOT_START=0
 
-function usage ()
+usage()
 {
     echo "Description: This tool helps you create a new vagrant box based on a template and start it."
     echo "Important: Minion names should only contain a-z and - to avoid minion_id and hostname issues."

@@ -4,7 +4,7 @@ add_key () {
     wget -q -O- "http://debian.saltstack.com/debian-salt-team-joehealy.gpg.key" | apt-key add -
 }
 
-VERSION=$(cat /etc/issue | cut -d ' ' -f 3)
+VERSION=$(cut -d ' ' -f 3 < /etc/issue)
 
 if [ "${VERSION}" = "6.0" ]; then
     add_key
