@@ -4,7 +4,7 @@ BASE="/vagrant/provision"
 HOST_NAME=$(cat "${BASE}/hostname.conf")
 
 # configure hosts and hostname
-"${BASE}/hosts-file-update.sh" "${HOST_NAME}.dev"
+"${BASE}/hosts-file-update.sh" "${HOST_NAME}"
 hostname "${HOST_NAME}"
 echo "${HOST_NAME}" > /etc/hostname
 
