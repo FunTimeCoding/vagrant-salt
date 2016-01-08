@@ -192,7 +192,6 @@ bundle exec veewee vbox halt jessie
 bundle exec veewee vbox export jessie
 vagrant box add jessie "${HOME}/Code/Foreign/veewee/jessie.box"
 bundle exec veewee vbox destroy jessie
-vagrant box remove jessie
 rm jessie.box
 ```
 
@@ -214,7 +213,6 @@ bundle exec veewee vbox halt wheezy
 bundle exec veewee vbox export wheezy
 vagrant box add wheezy "${HOME}/Code/Foreign/veewee/wheezy.box"
 bundle exec veewee vbox destroy wheezy
-vagrant box remove wheezy
 rm wheezy.box
 ```
 
@@ -236,6 +234,5 @@ bundle exec veewee vbox halt squeeze
 bundle exec veewee vbox export squeeze
 vagrant box add squeeze "${HOME}/Code/Foreign/veewee/squeeze.box"
 bundle exec veewee vbox destroy squeeze
-vagrant box remove squeeze
 rm squeeze.box
 ```
