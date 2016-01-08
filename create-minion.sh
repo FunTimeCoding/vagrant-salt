@@ -1,89 +1,102 @@
 #!/bin/sh -e
 
-DEFAULT_TEMPLATE="wheezy"
-
 BASE=$(dirname "${0}")
-MINION_ID=""
-TEMPLATE="${DEFAULT_TEMPLATE}"
-DO_NOT_START=0
+TEMPLATE="jessie"
+DO_NOT_START=false
+OPERATING_SYSTEM=$(uname)
+
+if [ "${OPERATING_SYSTEM}" = "Linux" ]; then
+    ETHERNET_DEVICE="eth0"
+elif [ "${OPERATING_SYSTEM}" = "Darwin" ]; then
+    ETHERNET_DEVICE="en0"
+else
+    echo "Operating system '${OPERATING_SYSTEM}' not supported."
+
+    exit 1
+fi
 
 usage()
 {
     echo "Description: This tool helps you create a new vagrant box based on a template and start it."
-    echo "Important: Minion names should only contain a-z and - to avoid minion_id and hostname issues."
-    echo "Usage:"
-    echo "-i NAME      - Pass the name of the new minion to create."
-    echo "-t TEMPLATE  - Pick a different template from the template directory."
-    echo "-d           - Don't run 'vagrant up', just create the box configuration."
-    echo "-h|-?        - Print this message."
-    echo "-v           - Enable verbose output."
+    echo "Usage: [-a][-d][-h][-e ETHERNET_DEVICE][-t TEMPLATE] NODE_NAME"
+    echo "* -a - Only create the box configuration and do not run 'vagrant up'."
+    echo "* -d - Enable debug output."
+    echo "* -h - Show this message."
+    echo "* -t - Default template is ${TEMPLATE}"
+    echo "* -e - Default ethernet device is ${ETHERNET_DEVICE}"
+    echo "Example: ${0} -d -a -t jessie ldap"
 }
 
-while getopts "h?vi:dt:" OPT; do
-    case "$OPT" in
-        h|\?)
+while true; do
+    case ${1} in
+        -h)
             usage
+
             exit 0
             ;;
-        v)
+        -d)
             set -x
+            shift
             ;;
-        t)
-            TEMPLATE=$OPTARG
+        -t)
+            TEMPLATE=${2-}
+            shift 2
             ;;
-        i)
-            MINION_ID=$OPTARG
+        -e)
+            ETHERNET_DEVICE=${2-}
+            shift 2
             ;;
-        d)
-            DO_NOT_START=1
+        -a)
+            DO_NOT_START=true
+            shift
+            ;;
+        *)
+            break
             ;;
     esac
 done
 
-if [ "${MINION_ID}" = "" ]; then
-    echo "New box name not set."
+OPTIND=1
+NODE_NAME="${1}"
+# TODO: NODE_NAME should match ^[a-z][-a-z0-9]*$
+
+if [ "${NODE_NAME}" = "" ]; then
+    echo "NODE_NAME not set."
     usage
+
     exit 1
 fi
 
-OS=$(uname)
-if [ "${OS}" = "Linux" ]; then
-    MASTER_IP=$(LANG=C ifconfig eth0 | grep "inet addr:" | sed -E 's/^.*inet addr:(10.0.0.[0-9\.]*) .*$/\1/gi')
-elif [ "${OS}" = "Darwin" ]; then
-    MASTER_IP=$(ipconfig getifaddr en0 || true)
-    if [ "${MASTER_IP}" = "" ]; then
-        MASTER_IP=$(ipconfig getifaddr en1 || true)
-    fi
-else
-    echo "Operating system '${OS}' unknown."
-    exit 1
+if [ "${OPERATING_SYSTEM}" = "Linux" ]; then
+    MASTER_ADDRESS=$(ip addr list "${ETHERNET_DEVICE}" | grep "inet " | cut -d ' ' -f 6 | cut -d / -f 1)
+elif [ "${OPERATING_SYSTEM}" = "Darwin" ]; then
+    MASTER_ADDRESS=$(ipconfig getifaddr "${ETHERNET_DEVICE}" || true)
 fi
 
-if [ "${MASTER_IP}" = "" ]; then
-    echo "Could not determine master IP."
+if [ "${MASTER_ADDRESS}" = "" ]; then
+    echo "Could not determine master address."
+
     exit 1
 fi
 
 mkdir -p "${BASE}/box"
-NEW_BOX_DIR="${BASE}/box/${MINION_ID}"
-if [ -d "${NEW_BOX_DIR}" ]; then
-    echo "Box ${NEW_BOX_DIR} already exists."
+NEW_BOX_DIRECTORY="${BASE}/box/${NODE_NAME}"
+
+if [ -d "${NEW_BOX_DIRECTORY}" ]; then
+    echo "Box ${NEW_BOX_DIRECTORY} already exists."
+
     exit 1
 fi
 
-NEW_BOX_TEMPLATE="${BASE}/template/${TEMPLATE}"
-cp -r "${NEW_BOX_TEMPLATE}" "${NEW_BOX_DIR}"
+cp -r "${BASE}/template/${TEMPLATE}" "${NEW_BOX_DIRECTORY}"
+echo "${MASTER_ADDRESS}" > "${NEW_BOX_DIRECTORY}/provision/master_address"
+echo "${NODE_NAME}" > "${NEW_BOX_DIRECTORY}/provision/hostname.conf"
 
-MINION_CONF="${NEW_BOX_DIR}/provision/minion_dev.conf"
-echo "master: ${MASTER_IP}" > "${MINION_CONF}"
+if [ "${DO_NOT_START}" = true ]; then
+    echo "Exit due to the -d argument."
 
-HOSTNAME_CONF="${NEW_BOX_DIR}/provision/hostname.conf"
-echo "${MINION_ID}" > "${HOSTNAME_CONF}"
-
-if [ "${DO_NOT_START}" = "1" ]; then
-    echo "Exiting now due to the -d argument."
     exit 0
 fi
 
-cd "${NEW_BOX_DIR}"
+cd "${NEW_BOX_DIRECTORY}"
 vagrant up

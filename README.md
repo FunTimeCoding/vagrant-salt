@@ -14,8 +14,7 @@ salt-master -l info
 Create a minion using `vagrant-salt` using the template `wheezy` with the new hostname and minion ID `gitlab`.
 
 ```sh
-cd ~/Code/vagrant-salt
-./create-minion.sh -t wheezy -i gitlab
+./create-minion.sh gitlab
 ```
 
 Add a minion to the top.sls
@@ -160,7 +159,7 @@ There is no YAML support in the community edition. The [Ansible plugin](https://
 
 ## Optional: Veewee
 
-You can use Veewee to generate Vagrant base boxes. Base boxes are clean slate images used by `vagrant-salt` to create minions.
+You can use [Veewee](https://github.com/jedi4ever/veewee) to generate Vagrant base boxes. Base boxes are clean slate images used by `vagrant-salt` to create minions.
 
 ```sh
 git clone https://github.com/jedi4ever/veewee
@@ -174,29 +173,59 @@ cd veewee
 bundle install
 ```
 
-Create a Squeeze base box.
+Create a Jessie base box.
 
 ```sh
 cd veewee
-bundle exec veewee vbox define squeeze Debian-6.0.10-amd64-netboot
-bundle exec veewee vbox build squeeze
-bundle exec veewee vbox export squeeze
+bundle exec veewee vbox define jessie Debian-8.2-amd64-netboot
+cd definitions/jessie
+sed -i '/^  - "chef\.sh"/s/- /#- /' definition.yml
+sed -i '/^  - "puppet\.sh"/s/- /#- /' definition.yml
+sed -i '/^  - "ruby\.sh"/s/- /#- /' definition.yml
+cd ../..
+bundle exec veewee vbox build jessie
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p 7222 -l vagrant 127.0.0.1
+sudo passwd
+exit
+bundle exec veewee vbox halt jessie
+bundle exec veewee vbox export jessie
+vagrant box add jessie "${HOME}/Code/Foreign/veewee/jessie.box"
 ```
 
 Create a Wheezy base box.
 
 ```sh
 cd veewee
-bundle exec veewee vbox define wheezy Debian-7.7.0-amd64-netboot
+bundle exec veewee vbox define wheezy Debian-7.9-amd64-netboot
+cd definitions/wheezy
+sed -i '/  "chef\.sh"/s/    /    #/' definition.rb
+sed -i '/  "puppet\.sh"/s/    /    #/' definition.rb
+sed -i '/  "ruby\.sh"/s/    /    #/' definition.rb
+cd ../..
 bundle exec veewee vbox build wheezy
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p 7222 -l vagrant 127.0.0.1
+sudo passwd
+exit
+bundle exec veewee vbox halt wheezy
 bundle exec veewee vbox export wheezy
+vagrant box add wheezy "${HOME}/Code/Foreign/veewee/wheezy.box"
 ```
 
-Create a Jessie base box.
+Create a Squeeze base box.
 
 ```sh
 cd veewee
-bundle exec veewee vbox define jessie Debian-8.1.0-amd64-netboot
-bundle exec veewee vbox build jessie
-bundle exec veewee vbox export jessie
+bundle exec veewee vbox define squeeze Debian-6.0.10-amd64-netboot
+cd definitions/squeeze
+sed -i '/  "chef\.sh"/s/    /    #/' definition.rb
+sed -i '/  "puppet\.sh"/s/    /    #/' definition.rb
+sed -i '/  "ruby\.sh"/s/    /    #/' definition.rb
+cd ../..
+bundle exec veewee vbox build squeeze
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p 7222 -l vagrant 127.0.0.1
+sudo passwd
+exit
+bundle exec veewee vbox halt squeeze
+bundle exec veewee vbox export squeeze
+vagrant box add squeeze "${HOME}/Code/Foreign/veewee/squeeze.box"
 ```
