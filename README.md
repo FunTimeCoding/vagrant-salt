@@ -42,26 +42,24 @@ Install `salt-master` on Debian.
 sudo apt-get install salt-master
 ```
 
-Configure the master appropriately. This is an example of `/etc/salt/master.d/osx.conf`.
+Configure the master appropriately. This is an example of `/etc/salt/master.d/master.conf`.
 
 ```
-# Required on OS X according to Salt documentation.
+# Required on OS X.
 max_open_files: 8192
 
 # Master should not run as root.
 user: shiin
 
-# Use a directory where the user has write permissions.
-# Note: /var/run is a bad idea since it gets wiped on reboot and users cannot create directories in there.
-pidfile: /Users/shiin/var/run/salt/salt-master.pid
-sock_dir: /Users/shiin/var/run/salt/master
+# Store all master generated files in the home directory.
+root_dir: /Users/shiin
 
-# Allow salt usage without root.
+# Permit the unprivileged user to access the master.
 client_acl:
   shiin:
     - .*
 
-# Local environment for developing all the things.
+# Use the local environment.
 state_top: top.sls
 file_roots:
   local:
@@ -71,8 +69,11 @@ pillar_roots:
     - /Users/shiin/srv/salt/pillar/local
     - /Users/shiin/srv/salt/pillar/secure-pillar-local
 
-# Be less verbose for dealing with many states.
+# Increase readability when dealing with many states.
 state_verbose: False
+
+# Accept minion keys automatically.
+auto_accept: True
 ```
 
 Clone the repository of your Salt states to `~/srv/salt`.
