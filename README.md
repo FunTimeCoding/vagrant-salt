@@ -236,3 +236,14 @@ vagrant box add squeeze "${HOME}/Code/Foreign/veewee/squeeze.box"
 bundle exec veewee vbox destroy squeeze
 rm squeeze.box
 ```
+
+Repackage Vagrant boxes for sharing them. One might as well not delete the `*.box` files in the first place.
+
+```sh
+vagrant box repackage jessie virtualbox 0
+mv package.box jessie.box
+vagrant box repackage wheezy virtualbox 0
+mv package.box wheezy.box
+vagrant box repackage squeeze virtualbox 0
+mv package.box squeeze.box
+```
