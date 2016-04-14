@@ -27,7 +27,7 @@ FILE=/etc/apt/sources.list.d/saltstack.list
 if [ "${VERSION}" = "6" ]; then
     echo "deb http://debian.saltstack.com/debian squeeze-saltstack main" > "${FILE}"
     BACKPORTS_SOURCE=/etc/apt/sources.list.d/backports.list
-    echo "deb http://backports.debian.org/debian-backports squeeze-backports main contrib non-free" > "${BACKPORTS_SOURCE}"
+    echo "deb http://archive.debian.org/debian-backports squeeze-backports main contrib non-free" > "${BACKPORTS_SOURCE}"
 elif [ "${VERSION}" = "7" ]; then
     echo "deb http://debian.saltstack.com/debian wheezy-saltstack main" > "${FILE}"
 elif [ "${VERSION}" = "8" ]; then
