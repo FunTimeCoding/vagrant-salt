@@ -1,42 +1,48 @@
-#!/bin/sh
+#!/bin/sh -e
 
-usage(){
-    echo "run as root: ${0} some.fqdn"
+USER_ID=$(id --user)
 
-    exit 1
-}
-
-[ "${1}" = "" ] && usage
-[ ! "$(id -u)" = "0" ] && usage
-
-VALIDATED=$(echo "${1}" | grep -P '(?=^.{1,254}$)(^(?:(?!\d+\.)[a-zA-Z0-9_\-]{1,63}\.?)+(?:[a-zA-Z]{2,})$)')
-
-if [ "${VALIDATED}" = "" ]; then
-    echo "invalid fqdn"
+if [ ! "${USER_ID}" = "0" ]; then
+    echo "Run as root."
 
     exit 1
 fi
 
-HOST_NAME=$(echo "${VALIDATED}" | cut -d '.' -f 1)
-IP=$(ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{print $1}')
+FULLY_QUALIFIED_DOMAIN_NAME="${1}"
 
-if [ "${IP}" = "" ]; then
-    echo "invalid ip"
+if [ "${FULLY_QUALIFIED_DOMAIN_NAME}" = "" ]; then
+    echo "Usage: ${0} FULLY_QUALIFIED_DOMAIN_NAME"
 
     exit 1
 fi
+
+echo "${FULLY_QUALIFIED_DOMAIN_NAME}" | grep --quiet --perl-regexp '(?=^.{1,254}$)(^(?:(?!\d+\.)[a-zA-Z0-9_\-]{1,63}\.?)+(?:[a-zA-Z]{2,})$)' && VALID=true || VALID=false
+
+if [ "${VALID}" = false ]; then
+    echo "Invalid name."
+
+    exit 1
+fi
+
+HOST_NAME=$(echo "${FULLY_QUALIFIED_DOMAIN_NAME}" | cut --delimiter '.' --fields 1)
 
 if [ "${HOST_NAME}" = "" ]; then
-    echo "invalid hostname"
+    echo "Could not determine the hostname."
 
     exit 1
 fi
 
-echo "old hosts file:"
+ADDRESS=$(ifconfig eth0 | grep 'inet addr:' | cut --delimiter ':' --fields 2 | awk '{ print $1 }' || true)
+
+if [ "${ADDRESS}" = "" ]; then
+    echo "Could not determine the address."
+
+    exit 1
+fi
+
+echo "Old hosts file:"
 cat /etc/hosts
-
 echo "127.0.0.1 localhost" > /etc/hosts
-echo "${IP} ${VALIDATED} ${HOST_NAME}" >> /etc/hosts
-
-echo "new hosts file:"
+echo "${ADDRESS} ${FULLY_QUALIFIED_DOMAIN_NAME} ${HOST_NAME}" >> /etc/hosts
+echo "New hosts file:"
 cat /etc/hosts
