@@ -44,9 +44,7 @@ sudo apt-get install salt-master
 
 Configure salt-master. This example configuration may be saved in `/etc/salt/master.d/salt.conf`.
 
-```
-state_top: top.sls
-
+```yml
 file_roots:
   local:
     - /Users/example_user/srv/salt/state
