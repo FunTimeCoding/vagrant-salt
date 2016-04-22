@@ -1,6 +1,6 @@
 #!/bin/sh -e
 
-NAME=$(cat /vagrant/provision/hostname.conf)
+NAME=$(cat /vagrant/provision/hostname)
 /vagrant/provision/hosts-file-update.sh "${NAME}"
 hostname "${NAME}"
 echo "${NAME}" > /etc/hostname
