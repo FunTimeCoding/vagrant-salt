@@ -11,10 +11,16 @@ Start the local salt-master.
 salt-master
 ```
 
-Create a box from the template `wheezy` with the hostname and minion name `gitlab`.
+Create a box from the default template `jessie` with the hostname and minion name `gitlab`.
 
 ```sh
 ./create-box.sh gitlab
+```
+
+Create a box and specify a template and network device.
+
+```sh
+./create-box.sh --template wheezy --device eth1 gitlab
 ```
 
 Add a minion to the top.sls
@@ -23,6 +29,24 @@ Add a minion to the top.sls
 local:
   'gitlab*':
     - gitlab
+```
+
+Start a box.
+
+```sh
+./up-box.sh gitlab
+```
+
+Provision a box.
+
+```sh
+salt gitlab state.highstate
+```
+
+Clean up a box to start over.
+
+```sh
+./destroy-box.sh gitlab
 ```
 
 
