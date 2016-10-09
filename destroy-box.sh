@@ -14,6 +14,6 @@ if [ ! -d "box/${BOX_NAME}" ]; then
     exit 1
 fi
 
-sudo salt-key --yes --delete "${BOX_NAME}"
+sudo salt-key --yes --delete "${BOX_NAME}" || true
 cd "box/${BOX_NAME}"
 vagrant destroy --force

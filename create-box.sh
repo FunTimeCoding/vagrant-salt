@@ -1,12 +1,12 @@
 #!/bin/sh -e
 
-TEMPLATE="jessie"
+TEMPLATE=jessie
 OPERATING_SYSTEM=$(uname)
 
-if [ "${OPERATING_SYSTEM}" = "Linux" ]; then
-    NETWORK_DEVICE="eth0"
-elif [ "${OPERATING_SYSTEM}" = "Darwin" ]; then
-    NETWORK_DEVICE="en0"
+if [ "${OPERATING_SYSTEM}" = Darwin ]; then
+    NETWORK_DEVICE=en0
+else
+    NETWORK_DEVICE=eth0
 fi
 
 usage()
@@ -49,10 +49,10 @@ if [ "${NODE_NAME}" = "" ]; then
     exit 1
 fi
 
-if [ "${OPERATING_SYSTEM}" = "Linux" ]; then
-    ADDRESS=$(ip addr list "${NETWORK_DEVICE}" | grep "inet " | cut -d ' ' -f 6 | cut -d / -f 1)
-elif [ "${OPERATING_SYSTEM}" = "Darwin" ]; then
+if [ "${OPERATING_SYSTEM}" = Darwin ]; then
     ADDRESS=$(ipconfig getifaddr "${NETWORK_DEVICE}" || true)
+else
+    ADDRESS=$(ip addr list "${NETWORK_DEVICE}" | grep 'inet ' | cut -d ' ' -f 6 | cut -d / -f 1)
 fi
 
 if [ "${ADDRESS}" = "" ]; then
