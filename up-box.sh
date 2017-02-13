@@ -17,4 +17,10 @@ fi
 cd "box/${BOX_NAME}"
 vagrant up
 sleep 10
-sudo salt-key --yes --accept "${BOX_NAME}"
+SYSTEM=$(uname)
+
+if [ "${SYSTEM}" = Darwin ]; then
+    salt-key --yes --accept "${BOX_NAME}"
+else
+    sudo salt-key --yes --accept "${BOX_NAME}"
+fi

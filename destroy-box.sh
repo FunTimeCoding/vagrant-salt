@@ -8,12 +8,15 @@ if [ "${BOX_NAME}" = "" ]; then
     exit 1
 fi
 
-if [ ! -d "box/${BOX_NAME}" ]; then
-    echo "Box not found."
+SYSTEM=$(uname)
 
-    exit 1
+if [ "${SYSTEM}" = Darwin ]; then
+    salt-key --yes --delete "${BOX_NAME}" || true
+else
+    sudo salt-key --yes --delete "${BOX_NAME}" || true
 fi
 
-sudo salt-key --yes --delete "${BOX_NAME}" || true
-cd "box/${BOX_NAME}"
-vagrant destroy --force
+if [ -d "box/${BOX_NAME}" ]; then
+    cd "box/${BOX_NAME}"
+    vagrant destroy --force
+fi

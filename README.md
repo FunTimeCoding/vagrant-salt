@@ -20,7 +20,7 @@ Create a box from the default template `jessie` with the hostname and minion nam
 Create a box and specify a template and network device.
 
 ```sh
-./create-box.sh --template wheezy --device eth1 gitlab
+./create-box.sh --template jessie --device eth1 gitlab
 ```
 
 Add a minion to the top.sls
@@ -54,10 +54,16 @@ Clean up a box to start over.
 
 ### Master
 
-Install salt-master on OS X.
+Install salt-master on macOS using Homebrew.
 
 ```sh
 brew install saltstack
+```
+
+Install salt-master on macOS using Pip.
+
+```sh
+pip2 install salt
 ```
 
 Install salt-master on Debian.
@@ -88,7 +94,7 @@ user: example_user
 root_dir: /Users/example_user
 
 # Allow an unprivileged user to connect to salt-master.
-client_acl:
+publisher_acl:
   example_user:
     - .*
 ```
@@ -98,7 +104,11 @@ Clone the repository of your Salt states to `~/srv/salt`.
 
 ### Vagrant
 
-Install [Vagrant](https://www.vagrantup.com).
+Install Vagrant on macOS.
+
+```sh
+brew cask install vagrant
+```
 
 Clone `vagrant-salt`.
 
@@ -115,11 +125,11 @@ vagrant box add squeeze http://funtimecoding.org/squeeze.box
 ```
 
 
-### Optional: Salt development
+### Salt development
 
-This section explains how to configure a development clone of Salt ([Source](http://docs.saltstack.com/en/latest/topics/development/hacking.html)).
+This section explains how to configure a development clone of Salt.
 
-OS X specific prerequisites.
+Install dependencies on macOS.
 
 ```sh
 brew install python swig
@@ -132,7 +142,7 @@ Clone the development repository.
 git clone https://github.com/saltstack/salt
 ```
 
-Common OS X and Debian configuration.
+Configure a Python environment.
 
 ```sh
 cd salt
@@ -141,7 +151,7 @@ source .venv/bin/activate
 pip install --upgrade pyzmq PyYAML pycrypto msgpack-python jinja2 psutil
 ```
 
-Install M2Crypto on OS X.
+Install M2Crypto on macOS.
 
 ```sh
 pip install --upgrade M2Crypto
@@ -167,17 +177,14 @@ salt-master
 ```
 
 
-### Optional: Veewee
+### Veewee
 
-You can use [Veewee](https://github.com/jedi4ever/veewee) to generate Vagrant base boxes. A base box is a clean slate installation of a particular operating system version.
+This section explains how to use Veewee to generate Vagrant base boxes.
+
+Install Veewee.
 
 ```sh
 git clone https://github.com/jedi4ever/veewee
-```
-
-Install dependencies.
-
-```sh
 gem install bundler
 cd veewee
 bundle install
