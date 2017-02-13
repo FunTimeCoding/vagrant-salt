@@ -1,14 +1,25 @@
-VAGRANTFILE_API_VERSION = "2"
+Vagrant.configure('2') do |config|
+    config.vm.box = 'wheezy'
 
-Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-    config.vm.box = "wheezy"
-    config.vm.network "public_network"
-    config.vm.provision :shell, :path => "provision/provision-salt-minion.sh", :privileged => true
-    config.vm.provider :virtualbox do |vb|
-        vb.customize ["modifyvm", :id, "--memory", "2048"]
+    if File.exist?('provision/system')
+        system = File.read('provision/system').chomp
+    else
+        system = 'Linux'
     end
 
-    if Vagrant.has_plugin?("vagrant-cachier")
+    if system == 'Darwin'
+        config.vm.network 'public_network', bridge: 'en1: Wi-Fi (AirPort)'
+    else
+        config.vm.network 'public_network', bridge: 'eth0'
+    end
+
+    config.vm.provision :shell, :path => 'provision/provision-salt-minion.sh'
+
+    config.vm.provider :virtualbox do |vb|
+        vb.customize ['modifyvm', :id, '--memory', '2048']
+    end
+
+    if Vagrant.has_plugin?('vagrant-cachier')
         config.cache.scope = :box
     end
 end

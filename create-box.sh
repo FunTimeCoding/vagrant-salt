@@ -11,7 +11,7 @@ fi
 
 usage()
 {
-    echo "Create a new vagrant box based on a template and start it."
+    echo "Create a new Vagrant box based on a template."
     echo "Usage: [--help][--template TEMPLATE][--device NETWORK_DEVICE] NODE_NAME"
     echo "Default template: ${TEMPLATE}"
     echo "Default network device: ${NETWORK_DEVICE}"
@@ -39,7 +39,6 @@ while true; do
     esac
 done
 
-OPTIND=1
 NODE_NAME="${1}"
 # TODO: NODE_NAME should match ^[a-z][-a-z0-9]*$
 
@@ -73,5 +72,6 @@ fi
 
 cp -r "${SCRIPT_DIRECTORY}/template/${TEMPLATE}" "${BOX_DIRECTORY}"
 cd "${BOX_DIRECTORY}"
+echo "${SYSTEM}" > provision/system
 echo "${ADDRESS}" > provision/master_address
 echo "${NODE_NAME}" > provision/hostname
