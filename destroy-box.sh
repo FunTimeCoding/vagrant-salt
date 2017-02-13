@@ -16,7 +16,9 @@ else
     sudo salt-key --yes --delete "${BOX_NAME}" || true
 fi
 
-if [ -d "box/${BOX_NAME}" ]; then
-    cd "box/${BOX_NAME}"
+SCRIPT_DIRECTORY=$(dirname "${0}")
+
+if [ -d "${SCRIPT_DIRECTORY}/box/${BOX_NAME}" ]; then
+    cd "${SCRIPT_DIRECTORY}/box/${BOX_NAME}"
     vagrant destroy --force
 fi
