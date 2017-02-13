@@ -8,13 +8,15 @@ if [ "${BOX_NAME}" = "" ]; then
     exit 1
 fi
 
-if [ ! -d "box/${BOX_NAME}" ]; then
+SCRIPT_DIRECTORY=$(dirname "${0}")
+
+if [ ! -d "${SCRIPT_DIRECTORY}/box/${BOX_NAME}" ]; then
     echo "Box not found."
 
     exit 1
 fi
 
-cd "box/${BOX_NAME}"
+cd "${SCRIPT_DIRECTORY}/box/${BOX_NAME}"
 vagrant up
 sleep 10
 SYSTEM=$(uname)

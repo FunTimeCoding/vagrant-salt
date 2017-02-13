@@ -1,9 +1,9 @@
 #!/bin/sh -e
 
 TEMPLATE=jessie
-OPERATING_SYSTEM=$(uname)
+SYSTEM=$(uname)
 
-if [ "${OPERATING_SYSTEM}" = Darwin ]; then
+if [ "${SYSTEM}" = Darwin ]; then
     NETWORK_DEVICE=en0
 else
     NETWORK_DEVICE=eth0
@@ -49,7 +49,7 @@ if [ "${NODE_NAME}" = "" ]; then
     exit 1
 fi
 
-if [ "${OPERATING_SYSTEM}" = Darwin ]; then
+if [ "${SYSTEM}" = Darwin ]; then
     ADDRESS=$(ipconfig getifaddr "${NETWORK_DEVICE}" || true)
 else
     ADDRESS=$(ip addr list "${NETWORK_DEVICE}" | grep 'inet ' | cut -d ' ' -f 6 | cut -d / -f 1)
